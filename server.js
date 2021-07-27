@@ -29,7 +29,7 @@ var Message = mongoose.model('Message', {
 })
 
 app.get('/messages', function(req,res) {
-    // This will make sure that we use the database insted a=of the Array that we used before. 
+    // This will make sure that we use the database insted of the Array that we used before. 
     // The Message.find is passed an empty object, meaning "find all messages", and a callback with an error
     // argument, if there's an error. 
     Message.find({}, function (err, messages) {
@@ -38,26 +38,67 @@ app.get('/messages', function(req,res) {
     
 })
 
+// ******************************************************************************************
+// app.post('/messages', function(req,res) {
+//     var message = new Message(req.body)
+
+//     message.save(function(err){
+//         if(err)
+//             sendStatus(500)
+
+//             //  This checks for badwords
+//             Message.findOne({message: 'fuck'}, function(err, censored) {
+//                 if (censored) {
+//                     console.log('censored word found - fuck', censored)
+
+//                     //  The database gives an ID to the word it finds, that's where it comes from. 
+//                     Message.deleteOne({_id: censored.id}, function(err) {
+//                         console.log('Word Removed')
+//                     }) 
+//                 }
+//             })
+
+//             // messages.push(req.body) // Push the new message to the 'messages' array
+//             //  console.log(messages) //debug
+        
+//             // // Notify the clients when a new message comes in: 
+//             io.emit('message', req.body) //  Event emitter setup: Event called message, 
+//                                          //  requested from the body, that 
+//                                          //  will contain the message
+//             res.sendStatus(200)
+//     })
+// })
+// *****************************************************************************************
+
+// The above code can be rewritten by using PROMISES. Promises reeturn an object that promise 
+// to do some work. The object has separate callbacks for success and failures. This allows
+// us to work with asynchronous code in a more synchronous way. Promises can be combined into
+// dependancy chains. 
+
 app.post('/messages', function(req,res) {
     var message = new Message(req.body)
 
-    message.save(function(err){
-        if(err)
-            sendStatus(500)
-
-            // messages.push(req.body) // Push the new message to the 'messages' array
-            // console.log(messages) //debug
-        
-            // Notify the clients when a new message comes in: 
-            io.emit('message', req.body) // Event emitter setup: Event called message, 
-                                         // requested from the body, that 
-                                         // will contain the message
-        
-            res.sendStatus(200)
+    message.save()
+    .then( function() {
+        console.log('saved')
+        return Message.findOne({message: 'fuck'})
     })
-
-    
+    .then(censored => {
+        if (censored) {
+            console.log('Censored word found', censored)
+            console.log ('Deleted')
+            return Message.deleteOne({_id: censored.id})
+        }
+        io.emit('message', req.body)
+        res.sendStatus(200)
+    })
+    .catch( err => {
+        res.sendStatus(500)
+        return console.error(err)
+    })
 })
+
+
 
 // This will let us know whenever a new user connects; 
 // This is achie ved by setting up a callback for the socket connection event. 
