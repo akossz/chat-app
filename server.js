@@ -66,7 +66,7 @@ app.post('/messages', function(req,res) {
                                          // requested from the body, that 
                                          // will contain the message
             res.sendStatus(200)
-    })
+    })   
 })
 
 
