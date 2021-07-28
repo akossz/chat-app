@@ -38,6 +38,15 @@ app.get('/messages', function(req,res) {
     
 })
 
+// Added user parameter here, for testing pusposes
+app.get('/messages/:user', function(req,res) {
+    var user = req.params.user
+    Message.find({name: user}, function (err, messages) {
+        res.send(messages)
+    })
+    
+})
+
 // ASYNC/AWAIT - Makes a synchronous code look even more synchronous.
 // Express function needs to be declared as "async". 
 // Try/Catch added for error handling. It'll try whatever is in the 
