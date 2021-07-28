@@ -40,30 +40,39 @@ app.get('/messages', function(req,res) {
 
 // ASYNC/AWAIT - Makes a synchronous code look even more synchronous.
 // Express function needs to be declared as "async". 
+// Try/Catch added for error handling. It'll try whatever is in the 
+// TRY block; if encounters am error it'll go to the catch block... 
+// Test the catch block with a "throw" statement. 
 
 app.post('/messages', async function(req,res) {
 
-    var message = new Message(req.body)
+    try {
 
-    var savedMessage =  await message.save()
+        // throw 'some error'
+
+        var message = new Message(req.body)
+
+        var savedMessage =  await message.save()
     
-    console.log('saved')
+        console.log('saved')
 
-    var censored = await Message.findOne({message: 'fuck'})
+        var censored = await Message.findOne({message: 'fuck'})
     
-    if (censored)
-        await Message.deleteOne({_id: censored.id})
+        if (censored)
+            await Message.deleteOne({_id: censored.id})
 
-    else    
-        io.emit('message', req.body)
+        else    
+            io.emit('message', req.body)
         
-    res.sendStatus(200)
-    
+        res.sendStatus(200)
+        
+    } catch (error) {
 
-    // .catch( err => {
-    //     res.sendStatus(500)
-    //     return console.error(err)
-    // })
+        res.sendStatus(500)
+        return console.error(error)
+        
+    }
+
 })
 
 
