@@ -43,12 +43,13 @@ app.get('/messages', function(req,res) {
 // Try/Catch added for error handling. It'll try whatever is in the 
 // TRY block; if encounters am error it'll go to the catch block... 
 // Test the catch block with a "throw" statement. 
+// FINALLY - executes after the Try/Catch blocks. 
 
 app.post('/messages', async function(req,res) {
 
     try {
 
-        // throw 'some error'
+        throw 'some error'
 
         var message = new Message(req.body)
 
@@ -71,6 +72,8 @@ app.post('/messages', async function(req,res) {
         res.sendStatus(500)
         return console.error(error)
         
+    } finally {
+        console.log ('This executes eventually, regardless whether the above succeeds or fails')
     }
 
 })
