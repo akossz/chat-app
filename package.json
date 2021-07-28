@@ -17,6 +17,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "jasmine": "^3.8.0"
+    "jasmine": "^3.8.0",
+    "request": "^2.88.2"
   }
 }
