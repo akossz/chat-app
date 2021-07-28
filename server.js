@@ -49,7 +49,7 @@ app.post('/messages', async function(req,res) {
 
     try {
 
-        throw 'some error'
+        // throw 'some error'
 
         var message = new Message(req.body)
 
