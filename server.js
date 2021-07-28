@@ -38,32 +38,32 @@ app.get('/messages', function(req,res) {
     
 })
 
-// PROMISES. Promises reeturn an object that promises to do some work. 
-// The object has separate callbacks for success and failures. This allows
-// us to work with asynchronous code in a more synchronous way. 
-// Promises can be combined into dependancy chains. 
+// ASYNC/AWAIT - Makes a synchronous code look even more synchronous.
+// Express function needs to be declared as "async". 
 
-app.post('/messages', function(req,res) {
+app.post('/messages', async function(req,res) {
+
     var message = new Message(req.body)
 
-    message.save()
-    .then( function() {
-        console.log('saved')
-        return Message.findOne({message: 'fuck'})
-    })
-    .then(censored => {
-        if (censored) {
-            console.log('Censored word found', censored)
-            console.log ('Deleted')
-            return Message.deleteOne({_id: censored.id})
-        }
+    var savedMessage =  await message.save()
+    
+    console.log('saved')
+
+    var censored = await Message.findOne({message: 'fuck'})
+    
+    if (censored)
+        await Message.deleteOne({_id: censored.id})
+
+    else    
         io.emit('message', req.body)
-        res.sendStatus(200)
-    })
-    .catch( err => {
-        res.sendStatus(500)
-        return console.error(err)
-    })
+        
+    res.sendStatus(200)
+    
+
+    // .catch( err => {
+    //     res.sendStatus(500)
+    //     return console.error(err)
+    // })
 })
 
 
